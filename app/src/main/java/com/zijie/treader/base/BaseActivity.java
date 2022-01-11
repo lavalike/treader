@@ -4,14 +4,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.umeng.analytics.MobclickAgent;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import butterknife.ButterKnife;
 
@@ -38,27 +35,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         setContentView(getLayoutRes());
         // 初始化View注入
         ButterKnife.bind(this);
-        
+
         initData();
         initListener();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        MobclickAgent.onResume(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        MobclickAgent.onPause(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ButterKnife.unbind(this);
     }
 
     public void showProgress(boolean flag, String message) {
@@ -83,18 +62,19 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * 检查是否拥有权限
+     *
      * @param thisActivity
      * @param permission
      * @param requestCode
      * @param errorText
      */
-    protected void checkPermission (Activity thisActivity, String permission, int requestCode,String errorText) {
+    protected void checkPermission(Activity thisActivity, String permission, int requestCode, String errorText) {
         //判断当前Activity是否已经获得了该权限
-        if(ContextCompat.checkSelfPermission(thisActivity,permission) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(thisActivity, permission) != PackageManager.PERMISSION_GRANTED) {
             //如果App的权限申请曾经被用户拒绝过，就需要在这里跟用户做出解释
             if (ActivityCompat.shouldShowRequestPermissionRationale(thisActivity,
                     permission)) {
-                Toast.makeText(this,errorText,Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, errorText, Toast.LENGTH_SHORT).show();
                 //进行权限请求
                 ActivityCompat.requestPermissions(thisActivity,
                         new String[]{permission},

@@ -4,19 +4,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.graphics.Typeface;
 import android.net.Uri;
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -28,12 +18,16 @@ import android.view.animation.Animation;
 import android.widget.AbsoluteLayout;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.umeng.analytics.MobclickAgent;
-import com.umeng.fb.FeedbackAgent;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 import com.zijie.treader.adapter.ShelfAdapter;
@@ -49,31 +43,27 @@ import com.zijie.treader.view.DragGridView;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
-import org.litepal.tablemanager.Connector;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
+import butterknife.BindView;
 import okhttp3.Call;
-import okhttp3.Request;
 
 public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, Animation.AnimationListener  {
+        implements NavigationView.OnNavigationItemSelectedListener, Animation.AnimationListener {
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.fab)
+    @BindView(R.id.fab)
     FloatingActionButton fab;
-    @Bind(R.id.nav_view)
+    @BindView(R.id.nav_view)
     NavigationView navigationView;
-    @Bind(R.id.drawer_layout)
+    @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
-    @Bind(R.id.bookShelf)
+    @BindView(R.id.bookShelf)
     DragGridView bookShelf;
 
 
@@ -102,11 +92,12 @@ public class MainActivity extends BaseActivity
     //打开书本的第一个动画是否完成
     private boolean mIsOpen = false;
     //动画加载计数器  0 默认  1一个动画执行完毕   2二个动画执行完毕
-    private int animationCount=0;
+    private int animationCount = 0;
 
     private static Boolean isExit = false;
 
     private Config config;
+
     @Override
     public int getLayoutRes() {
         return R.layout.activity_main;
@@ -117,13 +108,6 @@ public class MainActivity extends BaseActivity
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);//设置导航图标
 
-        //友盟统计
-        MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);
-        MobclickAgent.enableEncrypt(true);//6.0.0版本及以后
-        //自动提醒反馈建议
-        FeedbackAgent agent = new FeedbackAgent(this);
-        agent.sync();
-
         config = Config.getInstance();
         // 删除窗口背景
         getWindow().setBackgroundDrawable(null);
@@ -133,7 +117,7 @@ public class MainActivity extends BaseActivity
 //        SQLiteDatabase db = Connector.getDatabase();  //初始化数据库
         typeface = config.getTypeface();
         bookLists = DataSupport.findAll(BookList.class);
-        adapter = new ShelfAdapter(MainActivity.this,bookLists);
+        adapter = new ShelfAdapter(MainActivity.this, bookLists);
         bookShelf.setAdapter(adapter);
     }
 
@@ -144,7 +128,7 @@ public class MainActivity extends BaseActivity
             public void onClick(View view) {
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
-                Intent intent = new Intent(MainActivity.this,FileChooserActivity.class);
+                Intent intent = new Intent(MainActivity.this, FileChooserActivity.class);
                 MainActivity.this.startActivity(intent);
             }
         });
@@ -169,7 +153,7 @@ public class MainActivity extends BaseActivity
                     bookList.setId(bookLists.get(0).getId());
                     final String path = bookList.getBookpath();
                     File file = new File(path);
-                    if (!file.exists()){
+                    if (!file.exists()) {
                         new AlertDialog.Builder(MainActivity.this)
                                 .setTitle(MainActivity.this.getString(R.string.app_name))
                                 .setMessage(path + "文件不存在,是否删除该书本？")
@@ -184,7 +168,7 @@ public class MainActivity extends BaseActivity
                         return;
                     }
 
-                    ReadActivity.openBook(bookList,MainActivity.this);
+                    ReadActivity.openBook(bookList, MainActivity.this);
 
 //                    if (!isOpen){
 //                        bookLists = DataSupport.findAll(BookList.class);
@@ -235,7 +219,7 @@ public class MainActivity extends BaseActivity
 
 
     @Override
-    protected void onRestart(){
+    protected void onRestart() {
         super.onRestart();
         DragGridView.setIsShowDeleteButton(false);
         bookLists = DataSupport.findAll(BookList.class);
@@ -244,7 +228,7 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
     }
 
@@ -282,12 +266,13 @@ public class MainActivity extends BaseActivity
         Timer tExit;
         if (!isExit) {
             isExit = true; // ready to exit
-            if(DragGridView.getShowDeleteButton()) {
+            if (DragGridView.getShowDeleteButton()) {
                 DragGridView.setIsShowDeleteButton(false);
                 //要保证是同一个adapter对象,否则在Restart后无法notifyDataSetChanged
                 adapter.notifyDataSetChanged();
-            }else {
-                Toast.makeText(this, this.getResources().getString(R.string.press_twice_to_exit), Toast.LENGTH_SHORT).show(); }
+            } else {
+                Toast.makeText(this, this.getResources().getString(R.string.press_twice_to_exit), Toast.LENGTH_SHORT).show();
+            }
             tExit = new Timer();
             tExit.schedule(new TimerTask() {
                 @Override
@@ -311,7 +296,7 @@ public class MainActivity extends BaseActivity
         float scale2 = DisplayUtils.getScreenHeightPixels(this) / (float) itemTextView.getMeasuredHeight();
         scaleTimes = scale1 > scale2 ? scale1 : scale2;  //计算缩放比例
 
-        contentAnimation = new ContentScaleAnimation( location[0], location[1],scaleTimes, false);
+        contentAnimation = new ContentScaleAnimation(location[0], location[1], scaleTimes, false);
         contentAnimation.setInterpolator(interpolator);  //设置插值器
         contentAnimation.setDuration(ANIMATION_DURATION);
         contentAnimation.setFillAfter(true);  //动画停留在最后一帧
@@ -326,7 +311,7 @@ public class MainActivity extends BaseActivity
 
     public void closeBookAnimation() {
 
-        if (mIsOpen && wmRootView!=null) {
+        if (mIsOpen && wmRootView != null) {
             //因为书本打开后会移动到第一位置，所以要设置新的位置参数
             contentAnimation.setmPivotXValue(bookShelf.getFirstLocation()[0]);
             contentAnimation.setmPivotYValue(bookShelf.getFirstLocation()[1]);
@@ -337,8 +322,8 @@ public class MainActivity extends BaseActivity
                     itemTextView.getLayoutParams());
             params.x = bookShelf.getFirstLocation()[0];
             params.y = bookShelf.getFirstLocation()[1];//firstLocation[1]在滑动的时候回改变,所以要在dispatchDraw的时候获取该位置值
-            wmRootView.updateViewLayout(cover,params);
-            wmRootView.updateViewLayout(content,params);
+            wmRootView.updateViewLayout(cover, params);
+            wmRootView.updateViewLayout(content, params);
             //动画逆向运行
             if (!contentAnimation.getMReverse()) {
                 contentAnimation.reverse();
@@ -370,7 +355,7 @@ public class MainActivity extends BaseActivity
 //                bookLists = DataSupport.findAll(BookList.class);
                 BookList bookList = bookLists.get(itemPosition);
                 bookList.setId(bookLists.get(0).getId());
-                ReadActivity.openBook(bookList,MainActivity.this);
+                ReadActivity.openBook(bookList, MainActivity.this);
             }
 
         } else {
@@ -434,7 +419,7 @@ public class MainActivity extends BaseActivity
 //            startActivity(intent);
 //        }
 
-        if (id == R.id.action_select_file){
+        if (id == R.id.action_select_file) {
             Intent intent = new Intent(MainActivity.this, FileChooserActivity.class);
             startActivity(intent);
         }
@@ -448,15 +433,13 @@ public class MainActivity extends BaseActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-       if (id == R.id.nav_feedback) {
-           FeedbackAgent agent = new FeedbackAgent(this);
-           agent.startFeedbackActivity();
+        if (id == R.id.nav_feedback) {
 
-       } else if (id == R.id.nav_checkupdate) {
-           checkUpdate(true);
-       }else if (id == R.id.nav_about) {
-           Intent intent = new Intent(MainActivity.this, AboutActivity.class);
-           startActivity(intent);
+        } else if (id == R.id.nav_checkupdate) {
+            checkUpdate(true);
+        } else if (id == R.id.nav_about) {
+            Intent intent = new Intent(MainActivity.this, AboutActivity.class);
+            startActivity(intent);
         }
 
 //        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -464,15 +447,14 @@ public class MainActivity extends BaseActivity
         return true;
     }
 
-    public void checkUpdate(final boolean showMessage){
+    public void checkUpdate(final boolean showMessage) {
         String url = "http://api.fir.im/apps/latest/57be8d56959d6960d5000327";
         OkHttpUtils
                 .get()
                 .url(url)
                 .addParams("api_token", "a48b9bbcef61f34c51160bfed26aa6b2")
                 .build()
-                .execute(new StringCallback()
-                {
+                .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         if (showMessage) {
@@ -486,9 +468,9 @@ public class MainActivity extends BaseActivity
                             JSONObject jsonObject = new JSONObject(response);
                             String version = jsonObject.getString("version");
                             String versionCode = CommonUtil.getVersionCode(MainActivity.this) + "";
-                            if (versionCode.compareTo(version) < 0){
-                                showUpdateDialog(jsonObject.getString("name"),jsonObject.getString("versionShort"),jsonObject.getString("changelog"),jsonObject.getString("update_url"),MainActivity.this);
-                            }else{
+                            if (versionCode.compareTo(version) < 0) {
+                                showUpdateDialog(jsonObject.getString("name"), jsonObject.getString("versionShort"), jsonObject.getString("changelog"), jsonObject.getString("update_url"), MainActivity.this);
+                            } else {
                                 if (showMessage) {
                                     Toast.makeText(MainActivity.this, "已经是最新版本！", Toast.LENGTH_SHORT).show();
                                 }
@@ -508,7 +490,7 @@ public class MainActivity extends BaseActivity
     public static void showUpdateDialog(final String name, String version, String changelog, final String updateUrl, final Context context) {
         String title = "发现新版" + name + "，版本号：" + version;
 
-        new android.support.v7.app.AlertDialog.Builder(context).setTitle(title)
+        new AlertDialog.Builder(context).setTitle(title)
                 .setMessage(changelog)
                 .setPositiveButton("下载", new DialogInterface.OnClickListener() {
                     @Override

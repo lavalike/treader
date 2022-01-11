@@ -1,11 +1,11 @@
 package com.zijie.treader.base;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
 
 import butterknife.ButterKnife;
 
@@ -15,6 +15,7 @@ import butterknife.ButterKnife;
 public abstract class BaseFragment extends Fragment {
 
     private View rootView;
+
     /**
      * 初始化布局
      */
@@ -30,19 +31,13 @@ public abstract class BaseFragment extends Fragment {
         View view = inflater.inflate(getLayoutRes(), container, false);
         rootView = view;
         // 初始化View注入
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
         initData(view);
         initListener();
         return view;
     }
 
-    public View getRootView(){
+    public View getRootView() {
         return rootView;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ButterKnife.unbind(this);
     }
 }

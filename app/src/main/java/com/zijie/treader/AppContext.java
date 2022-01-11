@@ -3,7 +3,6 @@ package com.zijie.treader;
 import android.content.Context;
 import android.os.Environment;
 
-import com.umeng.analytics.MobclickAgent;
 import com.zijie.treader.db.BookList;
 import com.zijie.treader.util.PageFactory;
 
@@ -49,7 +48,7 @@ public class AppContext extends LitePalApplication {
         initialEnv();
     }
 
-    public String getTTPath(){
+    public String getTTPath() {
         return mSampleDirPath;
     }
 

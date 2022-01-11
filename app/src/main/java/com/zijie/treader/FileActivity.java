@@ -1,29 +1,19 @@
 package com.zijie.treader;
 
 import android.Manifest;
-import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.design.widget.AppBarLayout;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 
 import com.zijie.treader.adapter.FileAdapter;
 import com.zijie.treader.base.BaseActivity;
@@ -34,33 +24,28 @@ import com.zijie.treader.util.Fileutil;
 import org.litepal.crud.DataSupport;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Stack;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
+import butterknife.BindView;
 
 /**
  * Created by Administrator on 2016/7/11 0011.
  */
 public class FileActivity extends BaseActivity {
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.btn_choose_all)
+    @BindView(R.id.btn_choose_all)
     Button btnChooseAll;
-    @Bind(R.id.btn_delete)
+    @BindView(R.id.btn_delete)
     Button btnDelete;
-    @Bind(R.id.btn_add_file)
+    @BindView(R.id.btn_add_file)
     Button btnAddFile;
-    @Bind(R.id.lv_file_drawer)
+    @BindView(R.id.lv_file_drawer)
     ListView lvFileDrawer;
 
-    public static final int EXTERNAL_STORAGE_REQ_CODE = 10 ;
+    public static final int EXTERNAL_STORAGE_REQ_CODE = 10;
 
     //文件根目录
     private File root;
@@ -68,6 +53,7 @@ public class FileActivity extends BaseActivity {
     private static FileAdapter adapter;
     private SearchTextFileTask mSearchTextFileTask;
     private SaveBookToSqlLiteTask mSaveBookToSqlLiteTask;
+
     @Override
     public int getLayoutRes() {
         return R.layout.activity_file;
@@ -85,7 +71,7 @@ public class FileActivity extends BaseActivity {
                 finish();
             }
         });
-        if(getSupportActionBar() != null) {
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("导入图书");
         }
 
@@ -93,8 +79,8 @@ public class FileActivity extends BaseActivity {
         lvFileDrawer.setAdapter(adapter);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkPermission(FileActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, EXTERNAL_STORAGE_REQ_CODE,"添加图书需要此权限，请允许");
-        }else{
+            checkPermission(FileActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, EXTERNAL_STORAGE_REQ_CODE, "添加图书需要此权限，请允许");
+        } else {
             root = Environment.getExternalStorageDirectory();
             searchFile();
         }
@@ -153,13 +139,13 @@ public class FileActivity extends BaseActivity {
         if (mSearchTextFileTask != null) {
             mSearchTextFileTask.cancel(true);
         }
-        if (mSaveBookToSqlLiteTask != null){
+        if (mSaveBookToSqlLiteTask != null) {
             mSaveBookToSqlLiteTask.cancel(true);
         }
     }
 
     //保存选择的txt文件
-    private void saveBookList(){
+    private void saveBookList() {
         List<File> files = adapter.getCheckFiles();
         if (files.size() > 0) {
             List<BookList> bookLists = new ArrayList<BookList>();
@@ -175,7 +161,7 @@ public class FileActivity extends BaseActivity {
         }
     }
 
-    private class SaveBookToSqlLiteTask extends AsyncTask<List<BookList>,Void,Integer>{
+    private class SaveBookToSqlLiteTask extends AsyncTask<List<BookList>, Void, Integer> {
         private static final int FAIL = 0;
         private static final int SUCCESS = 1;
         private static final int REPEAT = 2;
@@ -184,9 +170,9 @@ public class FileActivity extends BaseActivity {
         @Override
         protected Integer doInBackground(List<BookList>... params) {
             List<BookList> bookLists = params[0];
-            for (BookList bookList : bookLists){
+            for (BookList bookList : bookLists) {
                 List<BookList> books = DataSupport.where("bookpath = ?", bookList.getBookpath()).find(BookList.class);
-                if (books.size() > 0){
+                if (books.size() > 0) {
                     repeatBookList = bookList;
                     return REPEAT;
                 }
@@ -194,7 +180,7 @@ public class FileActivity extends BaseActivity {
 
             try {
                 DataSupport.saveAll(bookLists);
-            } catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 return FAIL;
             }
@@ -205,7 +191,7 @@ public class FileActivity extends BaseActivity {
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
             String msg = "";
-            switch (result){
+            switch (result) {
                 case FAIL:
                     msg = "由于一些原因添加书本失败";
                     break;
@@ -224,7 +210,7 @@ public class FileActivity extends BaseActivity {
     }
 
     //设置添加按钮text
-    protected void setAddFileText(final int num){
+    protected void setAddFileText(final int num) {
         btnAddFile.post(new Runnable() {
             @Override
             public void run() {
@@ -232,22 +218,23 @@ public class FileActivity extends BaseActivity {
             }
         });
     }
-    protected void searchFile(){
+
+    protected void searchFile() {
 //        startTime = System.currentTimeMillis();
         mSearchTextFileTask = new SearchTextFileTask();
         mSearchTextFileTask.execute();
     }
 
-    private class SearchTextFileTask extends AsyncTask<Void,Void,Boolean>{
+    private class SearchTextFileTask extends AsyncTask<Void, Void, Boolean> {
         @Override
         protected void onPreExecute() {
-            showProgress(true,"正在扫描txt文件");
+            showProgress(true, "正在扫描txt文件");
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            listFile = FileUtils.getSuffixFile(root.getAbsolutePath(),".txt");
-            if (listFile == null || listFile.isEmpty()){
+            listFile = FileUtils.getSuffixFile(root.getAbsolutePath(), ".txt");
+            if (listFile == null || listFile.isEmpty()) {
                 return false;
             }
             return true;

@@ -21,7 +21,7 @@ import com.zijie.treader.view.BookPageWidget;
 
 import java.text.DecimalFormat;
 
-import butterknife.Bind;
+
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 

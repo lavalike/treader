@@ -1,9 +1,7 @@
 package com.zijie.treader.fragment;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -15,8 +13,7 @@ import com.zijie.treader.util.PageFactory;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
+import butterknife.BindView;
 
 /**
  * Created by Administrator on 2016/8/31 0031.
@@ -27,7 +24,7 @@ public class CatalogFragment extends BaseFragment {
     private PageFactory pageFactory;
     ArrayList<BookCatalogue> catalogueList = new ArrayList<>();
 
-    @Bind(R.id.lv_catalogue)
+    @BindView(R.id.lv_catalogue)
     ListView lv_catalogue;
 
     @Override
@@ -58,11 +55,11 @@ public class CatalogFragment extends BaseFragment {
 
     /**
      * 用于从Activity传递数据到Fragment
+     *
      * @param bookpath
      * @return
      */
-    public static CatalogFragment newInstance(String bookpath)
-    {
+    public static CatalogFragment newInstance(String bookpath) {
         Bundle bundle = new Bundle();
         bundle.putString(ARGUMENT, bookpath);
         CatalogFragment catalogFragment = new CatalogFragment();

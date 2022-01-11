@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.StateSet;
@@ -28,11 +27,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+
 import com.zijie.treader.R;
 import com.zijie.treader.ReadActivity;
 import com.zijie.treader.db.BookList;
 import com.zijie.treader.util.FileUtils;
-import com.zijie.treader.util.Fileutil;
 
 import org.litepal.crud.DataSupport;
 
@@ -296,7 +296,7 @@ public class DirectoryFragment extends Fragment implements View.OnClickListener 
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        switch (id){
+        switch (id) {
             case R.id.btn_choose_all:
                 checkAll();
                 changgeCheckBookNum();
@@ -315,7 +315,7 @@ public class DirectoryFragment extends Fragment implements View.OnClickListener 
         }
     }
 
-    private void addCheckBook(){
+    private void addCheckBook() {
         if (checkItems.size() > 0) {
             List<BookList> bookLists = new ArrayList<BookList>();
             for (ListItem item : checkItems) {
@@ -330,18 +330,18 @@ public class DirectoryFragment extends Fragment implements View.OnClickListener 
         }
     }
 
-    private void checkAll(){
-        for (ListItem listItem : items){
-            if (!TextUtils.isEmpty(listItem.thumb)){
+    private void checkAll() {
+        for (ListItem listItem : items) {
+            if (!TextUtils.isEmpty(listItem.thumb)) {
                 boolean isCheck = false;
-                for (ListItem item : checkItems){
-                    if (item.thumb.equals(listItem.thumb)){
+                for (ListItem item : checkItems) {
+                    if (item.thumb.equals(listItem.thumb)) {
                         isCheck = true;
                         break;
                     }
                 }
-                for (BookList list : bookLists){
-                    if (list.getBookpath().equals(listItem.thumb)){
+                for (BookList list : bookLists) {
+                    if (list.getBookpath().equals(listItem.thumb)) {
                         isCheck = true;
                         break;
                     }
@@ -353,7 +353,7 @@ public class DirectoryFragment extends Fragment implements View.OnClickListener 
         }
     }
 
-    private class SaveBookToSqlLiteTask extends AsyncTask<List<BookList>,Void,Integer> {
+    private class SaveBookToSqlLiteTask extends AsyncTask<List<BookList>, Void, Integer> {
         private static final int FAIL = 0;
         private static final int SUCCESS = 1;
         private static final int REPEAT = 2;
@@ -362,9 +362,9 @@ public class DirectoryFragment extends Fragment implements View.OnClickListener 
         @Override
         protected Integer doInBackground(List<BookList>... params) {
             List<BookList> bookLists = params[0];
-            for (BookList bookList : bookLists){
+            for (BookList bookList : bookLists) {
                 List<BookList> books = DataSupport.where("bookpath = ?", bookList.getBookpath()).find(BookList.class);
-                if (books.size() > 0){
+                if (books.size() > 0) {
                     repeatBookList = bookList;
                     return REPEAT;
                 }
@@ -372,7 +372,7 @@ public class DirectoryFragment extends Fragment implements View.OnClickListener 
 
             try {
                 DataSupport.saveAll(bookLists);
-            } catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 return FAIL;
             }
@@ -383,7 +383,7 @@ public class DirectoryFragment extends Fragment implements View.OnClickListener 
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
             String msg = "";
-            switch (result){
+            switch (result) {
                 case FAIL:
                     msg = "由于一些原因添加书本失败";
                     break;
@@ -545,9 +545,9 @@ public class DirectoryFragment extends Fragment implements View.OnClickListener 
                 return lhs.getName().compareToIgnoreCase(rhs.getName());
                 /*
                  * long lm = lhs.lastModified(); long rm = lhs.lastModified();
-				 * if (lm == rm) { return 0; } else if (lm > rm) { return -1; }
-				 * else { return 1; }
-				 */
+                 * if (lm == rm) { return 0; } else if (lm > rm) { return -1; }
+                 * else { return 1; }
+                 */
             }
         });
         for (File file : files) {
@@ -640,16 +640,16 @@ public class DirectoryFragment extends Fragment implements View.OnClickListener 
                 bookList.setBookpath(path);
 
                 boolean isSave = false;
-                for (BookList book : bookLists){
-                    if (book.getBookpath().equals(bookList.getBookpath())){
+                for (BookList book : bookLists) {
+                    if (book.getBookpath().equals(bookList.getBookpath())) {
                         isSave = true;
                     }
                 }
 
-                if (!isSave){
+                if (!isSave) {
                     bookList.save();
                 }
-                ReadActivity.openBook(bookList,getActivity());
+                ReadActivity.openBook(bookList, getActivity());
             }
         }).show();
     }
@@ -666,7 +666,7 @@ public class DirectoryFragment extends Fragment implements View.OnClickListener 
         return "Free " + formatFileSize(free) + " of " + formatFileSize(total);
     }
 
-    private void changgeCheckBookNum(){
+    private void changgeCheckBookNum() {
         btn_add_file.setText("加入书架(" + checkItems.size() + ")");
     }
 
@@ -710,14 +710,14 @@ public class DirectoryFragment extends Fragment implements View.OnClickListener 
             if (item.icon != 0) {
                 ((TextDetailDocumentsCell) convertView)
                         .setTextAndValueAndTypeAndThumb(item.title,
-                                item.subtitle, null, null, item.icon,false);
+                                item.subtitle, null, null, item.icon, false);
             } else {
                 String type = item.ext.toUpperCase().substring(0,
                         Math.min(item.ext.length(), 4));
 
                 ((TextDetailDocumentsCell) convertView)
                         .setTextAndValueAndTypeAndThumb(item.title,
-                                item.subtitle, type, item.thumb, 0,isStorage(item.thumb));
+                                item.subtitle, type, item.thumb, 0, isStorage(item.thumb));
             }
 
             textDetailCell.getCheckBox().setOnCheckedChangeListener(null);
@@ -725,9 +725,9 @@ public class DirectoryFragment extends Fragment implements View.OnClickListener 
             textDetailCell.getCheckBox().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isChecked){
+                    if (isChecked) {
                         checkItems.add(item);
-                    }else{
+                    } else {
                         removeCheckItem(item.thumb);
                     }
                     changgeCheckBookNum();
@@ -743,28 +743,28 @@ public class DirectoryFragment extends Fragment implements View.OnClickListener 
             return convertView;
         }
 
-        private boolean isCheck(String path){
-            for (ListItem item : checkItems){
-                if (item.thumb.equals(path)){
+        private boolean isCheck(String path) {
+            for (ListItem item : checkItems) {
+                if (item.thumb.equals(path)) {
                     return true;
                 }
             }
             return false;
         }
 
-        private void removeCheckItem(String path){
-            for (ListItem item : checkItems){
-                if (item.thumb.equals(path)){
+        private void removeCheckItem(String path) {
+            for (ListItem item : checkItems) {
+                if (item.thumb.equals(path)) {
                     checkItems.remove(item);
                     break;
                 }
             }
         }
 
-        private boolean isStorage(String path){
+        private boolean isStorage(String path) {
             boolean isStore = false;
-            for (BookList bookList : bookLists){
-                if (bookList.getBookpath().equals(path)){
+            for (BookList bookList : bookLists) {
+                if (bookList.getBookpath().equals(path)) {
                     return true;
                 }
             }
